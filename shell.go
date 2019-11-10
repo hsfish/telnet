@@ -51,8 +51,11 @@ func (p *Shell) End() error {
 	return nil
 }
 
-func (p *Shell) Run(cmd Command) CommandBack {
+func (p *Shell) Run(cmd Command) {
 	p.in <- cmd
+}
+
+func (p *Shell) Resp() CommandBack {
 	return <-p.out
 }
 

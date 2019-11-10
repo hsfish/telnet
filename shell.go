@@ -146,13 +146,13 @@ func (p *Shell) resp(out chan CommandBack, pattern string) {
 		isReturn := false
 		buf = append(buf, bytes...)
 		if i := strings.LastIndexByte(string(buf), '\n'); i > 0 {
-			lastLine := strings.TrimSpace(string(buf[i:]))
+			lastLine := strings.TrimSpace(string(buf[i+1:]))
 			if regxp.MatchString(lastLine) {
 				fmt.Println(p.opt.Regex, "--1--", lastLine)
-				buf = buf[:i-1]
+				buf = buf[:i+1]
 				isReturn = true
 			} else if p.handlerMore(lastLine) {
-				buf = buf[:i]
+				buf = buf[:i+1]
 			}
 		} else {
 			lastLine := strings.TrimSpace(string(buf))

@@ -230,6 +230,7 @@ func initOpt(opt *Options) {
 		opt = &Options{
 			Timeout:   TIMEOUT_DEFAULT,
 			TrimFirst: true,
+			Regex:     REGEX_DEFAULT,
 		}
 		return
 	}

@@ -33,16 +33,24 @@ func Test_Shell(t *testing.T) {
 	}
 	defer s.End()
 
-	data := ""
-	for {
-		back := s.Run(telnet.Command{
+	for _, command := range []telnet.Command{
+		telnet.Command{
+			Cmd: "terminal length 0",
+		},
+		telnet.Command{
 			Cmd:     "show startup-config",
 			Pattern: "CiscoN3K#",
-		})
-		data += back.Msg
-		if back.Code != telnet.COMMAND_MORE {
-			fmt.Println(back.Code, data)
-			break
+		},
+	} {
+		data := ""
+		for {
+			back := s.Run(command)
+			data += back.Msg
+			if back.Code != telnet.COMMAND_MORE {
+				fmt.Println(back.Code, data)
+				break
+			}
 		}
 	}
+
 }

@@ -17,8 +17,8 @@ type ClientConf struct {
 	Port          int
 	User          string
 	Password      string
-	Timeout       int64
-	DialTimeout   int64
+	Timeout       int // s
+	DialTimeout   int // s
 	UserRegex     string
 	PasswordRegex string
 	Pattern       string

@@ -35,7 +35,7 @@ type Command struct {
 }
 
 type Options struct {
-	Timeout   int64  // 执行单条命令返回超时时间 s
+	Timeout   int    // 执行单条命令返回超时时间 s
 	Regex     string // 匹配规则返回
 	TrimFirst bool   // 去掉第一条
 }

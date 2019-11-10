@@ -42,6 +42,7 @@ func Test_Shell(t *testing.T) {
 		data += back.Msg
 		if back.Code != telnet.COMMAND_MORE {
 			fmt.Println(back.Code, data)
+			break
 		}
 	}
 }

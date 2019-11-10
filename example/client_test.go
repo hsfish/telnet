@@ -11,7 +11,7 @@ func newTelnet() (*telnet.Client, error) {
 		Host:        "192.168.2.13",
 		Port:        23,
 		User:        "admin",
-		Password:    "geesunn@123",
+		Password:    "geesunn123",
 		Timeout:     10,
 		DialTimeout: 5,
 	}

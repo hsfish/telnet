@@ -149,7 +149,7 @@ func (p *Shell) resp(out chan CommandBack, pattern string) {
 			lastLine := strings.TrimSpace(string(buf[i:]))
 			if regxp.MatchString(lastLine) {
 				fmt.Println(p.opt.Regex, "--1--", lastLine)
-				buf = buf[:i]
+				buf = buf[:i-1]
 				isReturn = true
 			} else if p.handlerMore(lastLine) {
 				buf = buf[:i]

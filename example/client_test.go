@@ -25,5 +25,6 @@ func Test_NewClient(t *testing.T) {
 		t.Error(err)
 		return
 	}
+	defer c.Close()
 	t.Log(c)
 }

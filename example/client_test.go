@@ -1,0 +1,29 @@
+package example
+
+import (
+	"testing"
+
+	"github.com/hsfish/telnet"
+)
+
+func newTelnet() (*telnet.Client, error) {
+	conf := &telnet.ClientConf{
+		Host:        "192.168.2.13",
+		Port:        23,
+		User:        "admin",
+		Password:    "geesunn@123",
+		Timeout:     10,
+		DialTimeout: 5,
+	}
+	return telnet.NewClient(conf)
+}
+
+func Test_NewClient(t *testing.T) {
+
+	c, err := newTelnet()
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	t.Log(c)
+}

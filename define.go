@@ -9,7 +9,7 @@ const (
 	TIMEOUT_DEFAULT        = 10
 	USER_REGEX_DEFAULT     = "name|login"
 	PASSWORD_REGEX_DEFAULT = "ssword"
-	REGEX_DEFAULT          = "\\S(#|>|]|:)$"
+	REGEX_DEFAULT          = ".*(#|>|]|:)$"
 )
 
 type ClientConf struct {

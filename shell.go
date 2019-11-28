@@ -10,13 +10,14 @@ import (
 )
 
 type Shell struct {
-	c     *Conn
-	opt   *Options
-	isRun bool
-	regxp *regexp.Regexp
-	down  context.CancelFunc
-	in    chan<- Command
-	out   <-chan CommandBack
+	c         *Conn
+	opt       *Options
+	isRun     bool
+	regxp     *regexp.Regexp
+	down      context.CancelFunc
+	in        chan<- Command
+	out       <-chan CommandBack
+	copyWrite bool
 }
 
 func NewShell(c *Conn, opt *Options) (*Shell, error) {
@@ -62,7 +63,7 @@ func (p *Shell) Resp() CommandBack {
 func (p *Shell) shell(ctx context.Context) (chan<- Command, <-chan CommandBack) {
 	in := make(chan Command, 1)
 	out := make(chan CommandBack, 1)
-	option := make(chan string, 1)
+	option := make(chan Command, 1)
 
 	go func() {
 		defer func() {
@@ -86,7 +87,7 @@ func (p *Shell) shell(ctx context.Context) (chan<- Command, <-chan CommandBack) 
 				if len(option) > 0 {
 					panic("shell error")
 				}
-				option <- cmd.Pattern
+				option <- cmd
 
 			case <-ctx.Done(): // 收到退出信号
 				return
@@ -109,22 +110,22 @@ func (p *Shell) shell(ctx context.Context) (chan<- Command, <-chan CommandBack) 
 			select {
 			case <-ctx.Done():
 				return
-			case pattern, ok := <-option:
+			case cmd, ok := <-option:
 				if !ok {
 					return
 				}
-				p.resp(out, pattern)
+				p.resp(out, cmd)
 			}
 		}
 	}()
 	return in, out
 }
 
-func (p *Shell) resp(out chan CommandBack, pattern string) {
+func (p *Shell) resp(out chan CommandBack, cmd Command) {
 
 	regxp := p.regxp
-	if pattern != "" {
-		tRegxp, err := regexp.Compile(pattern)
+	if cmd.Pattern != "" {
+		tRegxp, err := regexp.Compile(cmd.Pattern)
 		if err != nil {
 			out <- commandFailed(err.Error())
 			return
@@ -168,6 +169,7 @@ func (p *Shell) resp(out chan CommandBack, pattern string) {
 		}
 
 		if !isReturn {
+			p.handlerContinue(cmd.Cmd, buf)
 			continue
 		}
 
@@ -203,6 +205,33 @@ func (p *Shell) handlerMore(line string) bool {
 		if strings.Contains(line, str) {
 			p.c.Write([]byte{' '})
 			return true
+		}
+	}
+
+	return false
+}
+
+var (
+	continues = map[string]string{
+		"Destination filename":    "\n",
+		"Do you want to overwrit": "y\n",
+	}
+)
+
+func (p *Shell) handlerContinue(cmd string, bytes []byte) bool {
+
+	if p.copyWrite {
+		return false
+	}
+	if strings.Contains(cmd, "copy") {
+		line := string(bytes)
+		fmt.Println("continue", cmd, line)
+		for key, value := range continues {
+			if strings.Contains(line, key) {
+				p.copyWrite = true
+				p.c.Write([]byte(value))
+				return true
+			}
 		}
 	}
 
